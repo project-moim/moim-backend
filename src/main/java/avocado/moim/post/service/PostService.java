@@ -1,9 +1,9 @@
-package avocado.moim.service;
+package avocado.moim.post.service;
 
-import avocado.moim.dto.PostListResponseDto;
-import avocado.moim.dto.PostResponseDto;
-import avocado.moim.dto.PostSaveRequestDto;
-import avocado.moim.dto.PostUpdateRequestDto;
+import avocado.moim.post.dto.PostListResponseDto;
+import avocado.moim.post.dto.PostResponseDto;
+import avocado.moim.post.dto.PostSaveRequestDto;
+import avocado.moim.post.dto.PostUpdateRequestDto;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
-package avocado.moim.controller;
+package avocado.moim.post.controller;
 
-import avocado.moim.dto.PostListResponseDto;
-import avocado.moim.dto.PostResponseDto;
-import avocado.moim.dto.PostSaveRequestDto;
-import avocado.moim.dto.PostUpdateRequestDto;
-import avocado.moim.service.PostService;
+import avocado.moim.post.dto.PostListResponseDto;
+import avocado.moim.post.dto.PostResponseDto;
+import avocado.moim.post.dto.PostSaveRequestDto;
+import avocado.moim.post.dto.PostUpdateRequestDto;
+import avocado.moim.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

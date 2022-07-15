@@ -1,4 +1,4 @@
-package avocado.moim.dto;
+package avocado.moim.post.dto;
 
 import avocado.moim.post.entity.Post;
 import lombok.Getter;

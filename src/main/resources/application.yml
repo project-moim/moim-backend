@@ -21,5 +21,23 @@ spring:
     username: root
     password: 12341234
     driver-class-name: com.mysql.cj.jdbc.Driver
-#  profiles:
-#    include: oauth
+
+  profiles:
+    include: oauth
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google: # /oauth2/authorization/google ? ??? ???? ??.
+            client-id: ENC(XE7JHh0ZYQD30jKoxwvx1S8r3clu3xZ9bqfMNGl/m/tRXW7T9SOOaCKxEHZLkS/qzqLCq8Gq8yChejcgtmgXtd2jKqzMxXL7p1m18378FapDbUwk0S71kg==)
+            client-secret: ENC(3fngNdbEIrK0FLmCDUhzIkVUDWD5vCfQRC+k8SHRWhi5DCCjIh1+0tYGKKC+rs2l)
+            scope:
+              - email
+              - profile
+
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+    password: ${JASYPT_PASSWORD}
