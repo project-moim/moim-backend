@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+        format_sql: true
+
+  #  datasource:
+  #    hikari:
+  #      jdbc-url: jdbc:h2:mem:testdb;MODE=MYSQL
+  #  h2:
+  #    console:
+  #      enabled: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/board?useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password: 12341234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#  profiles:
+#    include: oauth
