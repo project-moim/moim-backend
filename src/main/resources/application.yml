@@ -25,16 +25,16 @@ spring:
   profiles:
     include: oauth
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google: # /oauth2/authorization/google ? ??? ???? ??.
-            client-id: ENC(XE7JHh0ZYQD30jKoxwvx1S8r3clu3xZ9bqfMNGl/m/tRXW7T9SOOaCKxEHZLkS/qzqLCq8Gq8yChejcgtmgXtd2jKqzMxXL7p1m18378FapDbUwk0S71kg==)
-            client-secret: ENC(3fngNdbEIrK0FLmCDUhzIkVUDWD5vCfQRC+k8SHRWhi5DCCjIh1+0tYGKKC+rs2l)
-            scope:
-              - email
-              - profile
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google: # /oauth2/authorization/google ? ??? ???? ??.
+#            client-id: ENC(XE7JHh0ZYQD30jKoxwvx1S8r3clu3xZ9bqfMNGl/m/tRXW7T9SOOaCKxEHZLkS/qzqLCq8Gq8yChejcgtmgXtd2jKqzMxXL7p1m18378FapDbUwk0S71kg==)
+#            client-secret: ENC(3fngNdbEIrK0FLmCDUhzIkVUDWD5vCfQRC+k8SHRWhi5DCCjIh1+0tYGKKC+rs2l)
+#            scope:
+#              - email
+#              - profile
 
 jasypt:
   encryptor:

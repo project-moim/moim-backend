@@ -41,4 +41,11 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.providerId = providerId;
     }
+
+//    public List<String> getRoleList() {
+//        if (this.roles.length() > 0) {
+//            return Arrays.asList(this.roles.split(","));  // ,로 유저 역할 구분
+//        }
+//        return new ArrayList<>();
+//    }
 }

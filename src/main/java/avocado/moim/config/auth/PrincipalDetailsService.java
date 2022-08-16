@@ -1,4 +1,4 @@
-package avocado.moim.user.config.auth;
+package avocado.moim.config.auth;
 
 import avocado.moim.user.entity.User;
 import avocado.moim.user.repository.UserRepository;
@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -17,9 +17,6 @@ public class PrincipalDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User userEntity = userRepository.findByUsername(username);
-        if (userEntity != null) {
-            return new PrincipalDetails(userEntity);
-        }
-        return null;
+        return new PrincipalDetails(userEntity);
     }
 }
