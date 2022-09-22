@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StringUtils;
 
@@ -27,7 +28,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -88,17 +94,41 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        String email = principalDetails.getUser().getEmail();
 
-        String jwtToken = JWT.create()
-                .withSubject("accessToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + TokenProperties.EXPIRATION_TIME))
-                .withClaim("email", principalDetails.getUser().getEmail())
-                .withClaim("name", principalDetails.getUser().getName())
-                .withClaim("address", principalDetails.getUser().getAddress())
-                .withClaim("role", principalDetails.getUser().getRole().toString())
-                .sign(Algorithm.HMAC512(TokenProperties.SECRET));
+        UserDto userDto = new UserDto(userService.findByEmail(email));
 
-        response.addHeader(TokenProperties.HEADER_STRING, TokenProperties.TOKEN_PREFIX + jwtToken);
+        LocalDateTime ldt = LocalDateTime.now();
+        ZonedDateTime now = ldt.atZone(ZoneId.of("Asia/Seoul"));
+        long issueTime = now.toInstant().toEpochMilli();
+
+        long access_expiration = issueTime + Long.parseLong(Objects.requireNonNull(env.getProperty("token.access_expiration_time")));
+        long refresh_expiration = issueTime + Long.parseLong(Objects.requireNonNull(env.getProperty("token.refresh_expiration_time")));
+
+        String accessToken = utils.makeAccessToken(issueTime, access_expiration, userDto);
+        String refreshToken = utils.makeRefreshToken(issueTime, refresh_expiration, userDto);
+
+        log.warn("================================================successfulAuthentication userId = " + userDto.getEmail());
+        userService.saveLoginInfo(userDto.getEmail(), utils.getClientIP(request), issueTime, refreshToken);
+        response.addHeader("message", String.valueOf(Const.LOGIN_SUCCESS));
+
+        // [ Jackson 라이브러리로 json 모양의 String 변환 ]
+        // jackson objectmapper 객체 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Date 포멧 설정 - 그냥 Jackson을 돌리면 날짜 포멧이 적용 안된 긴 숫자열로 변환된다.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        objectMapper.setDateFormat(dateFormat);
+        // usersDto의 값을 json 형태로 변환
+        String jsonUsersDto = objectMapper.writeValueAsString(userDto);
+
+        response.setContentType("plain/text; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonUsersDto);
+
+        response.setHeader("AccessToken", accessToken);
+        response.setHeader("RefreshToken", refreshToken);
+        response.setStatus(HttpStatus.OK.value());
     }
 }
