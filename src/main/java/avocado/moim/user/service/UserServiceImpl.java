@@ -1,5 +1,6 @@
 package avocado.moim.user.service;
 
+import avocado.moim.user.dto.UserDto;
 import avocado.moim.user.entity.User;
 import avocado.moim.user.repository.UserRepository;
 import avocado.moim.util.Role;
@@ -16,10 +17,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long join(User user) {
-        user.setRole(Role.ROLE_USER);
+        UserDto userDto = new UserDto(user);
+        userDto.setRole(Role.ROLE_USER);
         String rawPassword = user.getPassword();
         String encPassword = bCryptPasswordEncoder.encode(rawPassword);
-        user.setPassword(encPassword);
-        return userRepository.save(user).getId();
+        userDto.setPassword(encPassword);
+        return userRepository.save(userDto.toEntity()).getId();
     }
 }

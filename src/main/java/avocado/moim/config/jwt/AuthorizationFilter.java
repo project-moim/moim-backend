@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class AuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public AuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
@@ -37,10 +37,10 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String jwtToken = request.getHeader(TokenProperties.HEADER_STRING).replace(TokenProperties.TOKEN_PREFIX, "");
-        String username = JWT.require(Algorithm.HMAC512(TokenProperties.SECRET)).build().verify(jwtToken).getClaim("username").asString();
+        String email = JWT.require(Algorithm.HMAC512(TokenProperties.SECRET)).build().verify(jwtToken).getClaim("email").asString();
 
-        if (username != null) {
-            User userEntity = userRepository.findByUsername(username);
+        if (email != null) {
+            User userEntity = userRepository.findByEmail(email);
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

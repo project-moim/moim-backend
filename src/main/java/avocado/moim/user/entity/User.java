@@ -3,7 +3,7 @@ package avocado.moim.user.entity;
 import avocado.moim.util.BaseTimeEntity;
 import avocado.moim.util.Role;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Data
+@Getter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTimeEntity {
@@ -20,29 +20,30 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String email;
 
     private String password;
 
-    private String email;
+    private String name;
+
+    private String address;
 
     private Role role;
 
-    private String provider;
-
-    private String providerId;
+    private int status;
 
     @Builder
-    public User(String username, String password, String email, Role role, String provider, String providerId) {
-        this.username = username;
-        this.password = password;
+    public User(Long id, String email, String password, String name, String address, Role role, int status) {
+        this.id = id;
         this.email = email;
+        this.password = password;
+        this.name = name;
+        this.address = address;
         this.role = role;
-        this.provider = provider;
-        this.providerId = providerId;
+        this.status = status;
     }
 
-//    public List<String> getRoleList() {
+    //    public List<String> getRoleList() {
 //        if (this.roles.length() > 0) {
 //            return Arrays.asList(this.roles.split(","));  // ,로 유저 역할 구분
 //        }

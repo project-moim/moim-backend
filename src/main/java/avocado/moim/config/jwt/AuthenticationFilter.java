@@ -33,7 +33,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
             // 토큰 생성
             UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+                    = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
 
             // 토큰으로 로그인 시도
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -52,9 +52,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String jwtToken = JWT.create()
                 .withSubject("accessToken")
                 .withExpiresAt(new Date(System.currentTimeMillis() + TokenProperties.EXPIRATION_TIME))
-                .withClaim("id", principalDetails.getUser().getId())
-                .withClaim("username", principalDetails.getUser().getUsername())
                 .withClaim("email", principalDetails.getUser().getEmail())
+                .withClaim("name", principalDetails.getUser().getName())
+                .withClaim("address", principalDetails.getUser().getAddress())
+                .withClaim("role", principalDetails.getUser().getRole().toString())
                 .sign(Algorithm.HMAC512(TokenProperties.SECRET));
 
         response.addHeader(TokenProperties.HEADER_STRING, TokenProperties.TOKEN_PREFIX + jwtToken);
