@@ -1,17 +1,26 @@
 package avocado.moim.config.jwt;
 
 import avocado.moim.config.auth.PrincipalDetails;
-import avocado.moim.user.entity.User;
+import avocado.moim.user.dto.UserDto;
+import avocado.moim.user.model.LoginRequestModel;
+import avocado.moim.user.service.UserService;
+import avocado.moim.util.AuthenticationUtils;
+import avocado.moim.util.Const;
 import avocado.moim.util.TokenProperties;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,28 +29,60 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private UserService userService;
+    private Environment env;
+    private AuthenticationUtils utils;
+
+    @Autowired
+    public AuthenticationFilter(AuthenticationManager authenticationManager, Environment env, UserService userService, AuthenticationUtils utils) {
+        this.userService = userService;
+        this.env = env;
+        this.utils = utils;
+        super.setAuthenticationManager(authenticationManager);
+        setFilterProcessesUrl("/users/login");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        log.warn("================================================attemptAuthentication");
+
         try {
-            ObjectMapper om = new ObjectMapper();
-            User user = om.readValue(request.getInputStream(), User.class);
+            LoginRequestModel creds = new ObjectMapper()
+                    .readValue(request.getInputStream(), LoginRequestModel.class);
 
-            // 토큰 생성
-            UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+            System.out.println("creds password = " + creds.getPassword());
+            // 	패스워드 정책 체크
+            if (!utils.checkPw(creds.getPassword())) {
+                response.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+                response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), "fail 1");
+                response.addHeader("message", String.valueOf(Const.LOGIN_FAIL_PASSWORD_POLICY_VIOLATION));
+            }
 
-            // 토큰으로 로그인 시도
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            // 	인증정보 조회
+            UserDto userDto = userService.confirmUser(creds.getEmail(), creds.getPassword());
 
-            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            return authentication;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            //	일치하는 정보가 없는 경우
+            if (!StringUtils.hasText(userDto.getEmail())) {
+                response.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+                response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), "fail 2");
+                response.addHeader("message", String.valueOf(Const.LOGIN_FAIL_NO_MATCHING_ACCOUNT));
+                return null;
+            }
+
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDto.getEmail(),
+                    creds.getPassword()
+            );
+            return getAuthenticationManager().authenticate(authenticationToken);
+        } catch (IOException ex) {
+            log.warn("attemptAuthentication error : {}", ex.getMessage());
+            throw new RuntimeException(ex);
         }
     }
 

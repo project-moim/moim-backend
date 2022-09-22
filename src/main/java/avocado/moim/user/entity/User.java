@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
@@ -28,6 +25,7 @@ public class User extends BaseTimeEntity {
 
     private String address;
 
+    @Enumerated(value = EnumType.STRING)
     private Role role;
 
     private int status;

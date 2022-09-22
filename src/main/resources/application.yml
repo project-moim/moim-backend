@@ -41,3 +41,22 @@ jasypt:
     algorithm: PBEWithMD5AndDES
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
     password: ${JASYPT_PASSWORD}
+
+mybatis:
+  mapper-locations: mapper/**/*.xml
+
+token:
+  access_expiration_time: 600000 # 60 * 10 * 1000  = 10분
+  refresh_expiration_time: 604800000 # 60 * 60 *  24 * 7 * 1000 = 7일
+  secret: thisIsJwtSecretKeyForAccessToApiRequestWithJavascriptWebTokenFromSSLCorSECOLABForUseCASDataBase
+
+authorization:
+  token:
+    header:
+      access-name: AccessToken
+      refresh-name: RefreshToken
+      prefix: Bearer
+
+access:
+  header:
+    name: Access-Control-Allow-Origin

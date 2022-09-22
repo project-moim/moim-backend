@@ -14,13 +14,13 @@
         where u.email = #{email}
     </select>
 
-    <!-- 로그인 정보 저장 또는 업데이트 -->
-    <insert id="saveLoginInfo" parameterType="avocado.moim.user.entity.LoginEntity">
-        insert into current_login (user_id, remote_addr, last_login_date, last_refresh_time, expiration_time_limit,
-                                   refresh_token)
-        values (#{userId}, #{remoteAddr}, NOW(), NOW(), #{expirationTimeLimit}, #{refreshToken}) on duplicate key
-        update remote_addr = #{remoteAddr}, last_login_date = NOW(), last_refresh_time=NOW(), expiration_time_limit=#{expirationTimeLimit}, refresh_token=#{refreshToken}
-    </insert>
+<!--    &lt;!&ndash; 로그인 정보 저장 또는 업데이트 &ndash;&gt;-->
+<!--    <insert id="saveLoginInfo" parameterType="avocado.moim.user.entity.LoginEntity">-->
+<!--        insert into current_login (user_id, remote_addr, last_login_date, last_refresh_time, expiration_time_limit,-->
+<!--                                   refresh_token)-->
+<!--        values (#{userId}, #{remoteAddr}, NOW(), NOW(), #{expirationTimeLimit}, #{refreshToken}) on duplicate key-->
+<!--        update remote_addr = #{remoteAddr}, last_login_date = NOW(), last_refresh_time=NOW(), expiration_time_limit=#{expirationTimeLimit}, refresh_token=#{refreshToken}-->
+<!--    </insert>-->
 
     <!-- 토큰 만료 시간이 3시간 경과한 로그인 정보 삭제 -->
     <delete id="deleteExpireToken">
@@ -58,16 +58,5 @@
         where user_id = #{userId}
           and (status = 0)
           and (role = 'USER' or role = 'ADMIN')
-    </select>
-
-    <select id="findByEmail" resultType="avocado.moim.user.entity.User" parameterType="string">
-        select email,
-               name,
-               password,
-               address,
-               role,
-               status
-        from user
-        where email = #{email}
     </select>
 </mapper>
