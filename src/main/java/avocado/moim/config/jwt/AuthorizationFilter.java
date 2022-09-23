@@ -4,8 +4,11 @@ import avocado.moim.config.auth.PrincipalDetails;
 import avocado.moim.user.entity.User;
 import avocado.moim.user.repository.UserRepository;
 import avocado.moim.util.TokenProperties;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,14 +20,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class AuthorizationFilter extends BasicAuthenticationFilter {
 
     private final UserRepository userRepository;
+    private final Environment env;
 
-    public AuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public AuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, Environment env) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.env = env;
     }
 
     @Override
@@ -37,15 +44,27 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String jwtToken = request.getHeader(TokenProperties.HEADER_STRING).replace(TokenProperties.TOKEN_PREFIX, "");
-        String email = JWT.require(Algorithm.HMAC512(TokenProperties.SECRET)).build().verify(jwtToken).getClaim("email").asString();
+        byte[] keyBytes = env.getProperty("token.secret").getBytes(StandardCharsets.UTF_8);
 
-        if (email != null) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(keyBytes))
+                .build()
+                .parseClaimsJws(jwtToken.trim())
+                .getBody();
+        String email = (String) claims.get("email");
+        System.out.println("email = " + email);
+
+        if (email == null) {
+            log.info("인증 실패 필터 HTTP 상태 값 : {}", response.getStatus());
+        } else {
             User userEntity = userRepository.findByEmail(email);
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("인증 성공 필터 HTTP 상태 값 {}", response.getStatus());
 
             chain.doFilter(request, response);
         }
     }
+
 }

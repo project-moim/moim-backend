@@ -48,7 +48,7 @@ mybatis:
 token:
   access_expiration_time: 600000 # 60 * 10 * 1000  = 10분
   refresh_expiration_time: 604800000 # 60 * 60 *  24 * 7 * 1000 = 7일
-  secret: thisIsJwtSecretKeyForAccessToApiRequestWithJavascriptWebTokenFromSSLCorSECOLABForUseCASDataBase
+  secret: thisIsJwtSecretKeyForAccessToApiRequestWithJavascriptWebToken
 
 authorization:
   token:
@@ -60,3 +60,8 @@ authorization:
 access:
   header:
     name: Access-Control-Allow-Origin
+
+logs:
+  config:
+    filePath: /Users/deunsol/Documents/GitHub/moim-backend/logs
+    fileName: moim

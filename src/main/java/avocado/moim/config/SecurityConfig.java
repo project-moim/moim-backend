@@ -2,6 +2,7 @@ package avocado.moim.config;
 
 import avocado.moim.config.jwt.AuthenticationFilter;
 import avocado.moim.config.jwt.AuthorizationFilter;
+import avocado.moim.config.jwt.CustomLogoutSuccessHandler;
 import avocado.moim.user.repository.UserRepository;
 import avocado.moim.user.service.UserService;
 import avocado.moim.util.AuthenticationUtils;
@@ -39,11 +40,17 @@ public class SecurityConfig {
                 .and()
                 // 권한에 따라 url 접근 제한
                 .authorizeRequests(authorize -> authorize.antMatchers("/api/user/**")
-                        .access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+                        .access("hasRole('USER') or hasRole('ADMIN')")
                         .antMatchers("/api/admin/**")
-                        .access("hasRole('ROLE_ADMIN')")
+                        .access("hasRole('ADMIN')")
                         .anyRequest().permitAll()
                 )
+                .logout()
+                .logoutUrl("/users/logout")
+                .logoutSuccessHandler(new CustomLogoutSuccessHandler(env, userService))
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .and()
                 .build();
     }
 
@@ -55,7 +62,7 @@ public class SecurityConfig {
             builder
                     .addFilter(corsConfig.corsFilter())
                     .addFilter(new AuthenticationFilter(authenticationManager, env, userService, utils))
-                    .addFilter(new AuthorizationFilter(authenticationManager, userRepository));
+                    .addFilter(new AuthorizationFilter(authenticationManager, userRepository, env));
         }
     }
 }

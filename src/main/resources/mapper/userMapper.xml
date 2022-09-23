@@ -48,15 +48,37 @@
     </select>
 
     <select id="confirmUser2" resultType="avocado.moim.user.entity.User" parameterType="string">
-        select user_id as userId,
+        select email,
                name,
-               email,
                password,
+               address,
                role,
                status
         from user
-        where user_id = #{userId}
+        where email = #{email}
           and (status = 0)
           and (role = 'USER' or role = 'ADMIN')
     </select>
+
+    <!-- 정상적 로그아웃 시 토큰 삭제 -->
+    <delete id="deleteToken" parameterType="string">
+        delete
+        from current_login
+        where email = #{email}
+    </delete>
+
+    <!-- 리프레시 토큰 일치 여부 확인 -->
+    <select id="checkValidRefreshToken" parameterType="string" resultType="boolean">
+        select exists(select email
+                      from current_login
+                      where email = #{claimsEmail}
+                        and refresh_token = #{refreshToken})
+    </select>
+
+    <!-- last_refresh_time -->
+    <update id="updateLastRefreshTime" parameterType="string">
+        update current_login
+        set last_refresh_time = NOW()
+        where email = #{email}
+    </update>
 </mapper>

@@ -14,4 +14,10 @@ public interface UserService {
     void saveLoginInfo(String email, String remoteAddr, long issueTime, String refreshToken);
 
     void deleteExpireToken();
+
+    void deleteToken(String email);
+
+    boolean checkValidRefreshToken(String claimsEmail, String refreshToken);
+
+    void updateLastRefreshTime(String email);
 }

@@ -6,9 +6,6 @@ import avocado.moim.user.model.LoginRequestModel;
 import avocado.moim.user.service.UserService;
 import avocado.moim.util.AuthenticationUtils;
 import avocado.moim.util.Const;
-import avocado.moim.util.TokenProperties;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StringUtils;
 
@@ -32,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 @Slf4j
@@ -54,7 +49,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.warn("================================================attemptAuthentication");
+        log.warn("================================================ attemptAuthentication");
 
         try {
             LoginRequestModel creds = new ObjectMapper()
@@ -110,7 +105,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = utils.makeAccessToken(issueTime, access_expiration, userDto);
         String refreshToken = utils.makeRefreshToken(issueTime, refresh_expiration, userDto);
 
-        log.warn("================================================successfulAuthentication userId = " + userDto.getEmail());
+        log.warn("================================================ successfulAuthentication userId = " + userDto.getEmail());
         userService.saveLoginInfo(userDto.getEmail(), utils.getClientIP(request), issueTime, refreshToken);
         response.addHeader("message", String.valueOf(Const.LOGIN_SUCCESS));
 

@@ -12,4 +12,10 @@ public interface IUserMapper {
     void deleteExpireToken();
 
     void saveLoginInfo(CurrentLogin currentLoginEntity);
+
+    void deleteToken(String email);
+
+    boolean checkValidRefreshToken(String claimEmail, String refreshToken);
+
+    void updateLastRefreshTime(String email);
 }

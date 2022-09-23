@@ -3,6 +3,7 @@ package avocado.moim.user.service;
 import avocado.moim.user.dto.UserDto;
 import avocado.moim.user.entity.CurrentLogin;
 import avocado.moim.user.entity.User;
+import avocado.moim.user.repository.CurrentLoginRepository;
 import avocado.moim.user.repository.IUserMapper;
 import avocado.moim.user.repository.UserRepository;
 import avocado.moim.util.Role;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final IUserMapper userMapper;
     private final Environment env;
+    private final CurrentLoginRepository currentLoginRepository;
 
     @Override
     public Long join(User user) {
@@ -75,5 +77,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteExpireToken() {
         userMapper.deleteExpireToken();
+    }
+
+    @Override
+    public void deleteToken(String email) {
+        userMapper.deleteToken(email);
+    }
+
+    @Override
+    public boolean checkValidRefreshToken(String claimsEmail, String refreshToken) {
+        return userMapper.checkValidRefreshToken(claimsEmail, refreshToken);
+    }
+
+    @Override
+    public void updateLastRefreshTime(String email) {
+        userMapper.updateLastRefreshTime(email);
     }
 }
