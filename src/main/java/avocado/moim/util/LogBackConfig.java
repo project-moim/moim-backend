@@ -45,7 +45,10 @@ public class LogBackConfig {
 
     @Bean
     public void logConfig() {
-
+        consoleAppender = getLogConsoleAppender();
+        fileAppender = getLogFileAppender();
+        filterAppender = getFilterLogFileAppender();
+        createLoggers();
     }
 
     private void createLogger(String loggerName, Level logLevel, Boolean additive) {
@@ -63,11 +66,12 @@ public class LogBackConfig {
         createLogger("root", INFO, true);
         createLogger("jdbc", OFF, false);
         createLogger("jdbc.sqlonly", DEBUG, false);
+        createLogger("jdbc.sqltiming", DEBUG, false);
         createLogger("avocado.moim", INFO, false);
-        createLogger("avocado.moim", DEBUG, false);
-        createLogger("avocado.moim", WARN, false);
-        createLogger("avocado.moim", INFO, false);
-        createLogger("avocado.moim", DEBUG, false);
+        createLogger("avocado.moim.*.controller", DEBUG, false);
+        createLogger("avocado.moim.*.service", WARN, false);
+        createLogger("avocado.moim.*.repository", INFO, false);
+        createLogger("avocado.moim.*.security", DEBUG, false);
     }
 
     /**
