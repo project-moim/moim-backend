@@ -1,8 +1,8 @@
 package avocado.moim.post.controller;
 
-import avocado.moim.dto.PostSaveRequestDto;
+import avocado.moim.post.dto.PostSaveRequestDto;
 import avocado.moim.post.entity.Post;
-import avocado.moim.repository.PostRepository;
+import avocado.moim.post.repository.PostRepository;
 import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

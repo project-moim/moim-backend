@@ -1,7 +1,7 @@
 package avocado.moim.post.service;
 
 import avocado.moim.post.entity.Post;
-import avocado.moim.repository.PostRepository;
+import avocado.moim.post.repository.PostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
